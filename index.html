@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>営業AIエージェント</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>営業AIエージェント</h1>
+
+    <div class="card">
+      <label>市場名</label>
+      <input type="text" id="market" placeholder="例：SaaS市場">
+
+      <label>自社シェア(%)</label>
+      <input type="number" id="share" placeholder="例：26.1">
+
+      <label>競合情報</label>
+      <textarea id="competitor" placeholder="競合の特徴"></textarea>
+
+      <button id="analyzeBtn">AI分析開始</button>
+    </div>
+
+    <div class="result card">
+      <h2>分析結果</h2>
+      <div id="output"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
