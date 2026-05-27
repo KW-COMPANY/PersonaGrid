@@ -3,180 +3,561 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PersonaGrid | シェア分析 AI エージェント</title>
-  <meta name="description" content="営業・市場分析向けAIエージェント。市場シェア分析、ペルソナ生成、セグメント分析、営業戦略提案を自動生成。" />
+
+  <title>PersonaGrid | 匿名市場分析 AIエージェント</title>
+
+  <meta
+    name="description"
+    content="匿名入力対応の市場分析AIエージェント。市場シェア分析、ペルソナ生成、セグメント分析、営業戦略提案を自動生成。"
+  />
+
   <link rel="stylesheet" href="style.css" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- DOMPurify -->
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+
+  <!-- marked -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
+
 <body>
 
   <header class="site-header">
     <div class="header-inner">
+
       <div class="logo-block">
+
         <div class="logo-icon">
           <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M16 2 A14 14 0 0 1 30 16" stroke="#00d4ff" stroke-width="3" stroke-linecap="round"/>
+            <path
+              d="M16 2 A14 14 0 0 1 30 16"
+              stroke="#00d4ff"
+              stroke-width="3"
+              stroke-linecap="round"
+            />
             <circle cx="16" cy="16" r="4" fill="#00d4ff"/>
-            <line x1="16" y1="16" x2="24" y2="8" stroke="#00d4ff" stroke-width="1.5"/>
+            <line
+              x1="16"
+              y1="16"
+              x2="24"
+              y2="8"
+              stroke="#00d4ff"
+              stroke-width="1.5"
+            />
           </svg>
         </div>
+
         <div class="logo-text">
           <span class="logo-main">PersonaGrid</span>
-          <span class="logo-sub">AIエージェント型 シェア分析・営業戦略支援</span>
+          <span class="logo-sub">
+            AIエージェント型 匿名市場分析・営業戦略支援
+          </span>
         </div>
+
       </div>
+
       <nav class="header-nav">
         <span class="nav-badge">AI Agent</span>
+        <span class="nav-badge powered">Anonymous Safe Mode</span>
       </nav>
+
     </div>
   </header>
 
   <main class="main-content">
 
+    <!-- HERO -->
     <section class="hero-section">
       <div class="hero-inner">
-        <div class="hero-badge">SALES AI AGENT</div>
-        <h1 class="hero-title">市場シェア分析 × ペルソナ生成 × 営業戦略</h1>
+
+        <div class="hero-badge">
+          SALES AI AGENT
+        </div>
+
+        <h1 class="hero-title">
+          匿名市場分析 × ペルソナ生成 × 営業戦略
+        </h1>
+
         <p class="hero-description">
           AI分析でシェアポジション・ターゲット顧客・
           営業戦略を自動生成します。
         </p>
+
       </div>
     </section>
 
+    <!-- SHARE LEVEL -->
     <section class="share-ladder-section">
-  <div class="section-label">SHARE LEVEL FRAMEWORK</div>
 
-  <h2 class="section-title">
-    シェアレベル 7段階分析
-  </h2>
+      <div class="section-label">
+        SHARE LEVEL FRAMEWORK
+      </div>
 
-  <div
-    class="share-ladder"
-    id="shareLadder"
-  ></div>
-</section>
+      <h2 class="section-title">
+        シェアレベル 7段階分析
+      </h2>
 
+      <div
+        class="share-ladder"
+        id="shareLadder"
+      ></div>
+
+    </section>
+
+    <!-- FORM -->
     <section class="form-section">
-      <div class="section-label">ANALYSIS INPUT</div>
-      <h2 class="section-title">市場・営業情報入力</h2>
+
+      <div class="section-label">
+        ANALYSIS INPUT
+      </div>
+
+      <h2 class="section-title">
+        匿名市場・営業情報入力
+      </h2>
+
+      <!-- IMPORTANT SAFE NOTICE -->
+      <div class="privacy-notice">
+
+        <div class="privacy-notice-title">
+          匿名入力ポリシー
+        </div>
+
+        <ul class="privacy-notice-list">
+          <li>
+            実在企業名・ブランド名・個人名は入力しないでください
+          </li>
+
+          <li>
+            メールアドレス・電話番号・URL等の個人情報は入力禁止です
+          </li>
+
+          <li>
+            「SaaS」「製造DX」「人材支援」などカテゴリ単位で入力してください
+          </li>
+
+          <li>
+            本ツールは匿名化された市場分析AIエージェントです
+          </li>
+        </ul>
+
+      </div>
+
       <form class="analysis-form" id="analysisForm">
+
         <div class="form-grid">
+
+          <!-- 修正: companyName → analysisCategory -->
           <div class="form-group">
-            <label class="form-label" for="companyName">企業名・ブランド名</label>
-            <input type="text" id="companyName" class="form-input" placeholder="例：株式会社サンプル" />
+
+            <label
+              class="form-label"
+              for="analysisCategory"
+            >
+              分析対象カテゴリ
+            </label>
+
+            <input
+              type="text"
+              id="analysisCategory"
+              class="form-input"
+              placeholder="例：BtoB SaaS / 製造DX / EC支援"
+              maxlength="100"
+            />
+
           </div>
+
           <div class="form-group">
-            <label class="form-label" for="industry">業界・業種</label>
-            <input type="text" id="industry" class="form-input" placeholder="例：SaaS / 人材 / 製造" required />
+
+            <label
+              class="form-label"
+              for="industry"
+            >
+              業界・業種
+            </label>
+
+            <input
+              type="text"
+              id="industry"
+              class="form-input"
+              placeholder="例：SaaS / 人材 / 製造"
+              maxlength="100"
+              required
+            />
+
           </div>
+
           <div class="form-group form-group--wide">
-            <label class="form-label" for="productService">商品・サービス概要</label>
-            <textarea id="productService" class="form-textarea" placeholder="どのような商品・サービスか"></textarea>
+
+            <label
+              class="form-label"
+              for="productService"
+            >
+              商品・サービス概要
+            </label>
+
+            <textarea
+              id="productService"
+              class="form-textarea"
+              placeholder="どのようなカテゴリ・特徴のサービスか（匿名ベース）"
+              maxlength="1200"
+            ></textarea>
+
           </div>
+
           <div class="form-group">
-            <label class="form-label" for="currentShare">現在の市場シェア(%)</label>
+
+            <label
+              class="form-label"
+              for="currentShare"
+            >
+              現在の市場シェア(%)
+            </label>
+
             <div class="input-with-unit">
-              <input type="number" id="currentShare" class="form-input" placeholder="例：10.9" min="0" max="100" step="0.1" required />
+
+              <input
+                type="number"
+                id="currentShare"
+                class="form-input"
+                placeholder="例：10.9"
+                min="0"
+                max="100"
+                step="0.1"
+                required
+              />
+
               <span class="unit-label">%</span>
+
             </div>
-            <div id="sharePreview"></div>
+
+            <div
+              id="sharePreview"
+              class="share-preview"
+            ></div>
+
           </div>
+
           <div class="form-group">
-            <label class="form-label" for="marketSize">市場規模</label>
-            <input type="text" id="marketSize" class="form-input" placeholder="例：500億円" />
+
+            <label
+              class="form-label"
+              for="marketSize"
+            >
+              市場規模
+            </label>
+
+            <input
+              type="text"
+              id="marketSize"
+              class="form-input"
+              placeholder="例：500億円"
+              maxlength="100"
+            />
+
           </div>
+
+          <!-- 修正: competitors -->
           <div class="form-group form-group--wide">
-            <label class="form-label" for="competitors">競合情報</label>
-            <textarea id="competitors" class="form-textarea" placeholder="競合企業・シェア・特徴など"></textarea>
+
+            <label
+              class="form-label"
+              for="competitors"
+            >
+              競合タイプ・競争環境
+            </label>
+
+            <textarea
+              id="competitors"
+              class="form-textarea"
+              placeholder="例：外資系SaaS / 低価格帯サービス / 大手ERP系"
+              maxlength="1200"
+            ></textarea>
+
           </div>
+
           <div class="form-group">
-            <label class="form-label" for="targetSegment">現在のターゲット層</label>
-            <input type="text" id="targetSegment" class="form-input" placeholder="例：従業員50〜300名" />
+
+            <label
+              class="form-label"
+              for="targetSegment"
+            >
+              現在のターゲット層
+            </label>
+
+            <input
+              type="text"
+              id="targetSegment"
+              class="form-input"
+              placeholder="例：従業員50〜300名企業"
+              maxlength="150"
+            />
+
           </div>
+
           <div class="form-group">
-            <label class="form-label" for="salesGoal">営業目標・課題</label>
-            <input type="text" id="salesGoal" class="form-input" placeholder="例：半年で15%シェア" />
+
+            <label
+              class="form-label"
+              for="salesGoal"
+            >
+              営業目標・課題
+            </label>
+
+            <input
+              type="text"
+              id="salesGoal"
+              class="form-input"
+              placeholder="例：半年で15%シェア"
+              maxlength="150"
+            />
+
           </div>
+
         </div>
+
         <div class="form-actions">
-          <button type="submit" class="btn-analyze" id="analyzeBtn">
-            <span class="btn-text">AIエージェント分析開始</span>
-            <span class="btn-badge">5段階分析</span>
+
+          <button
+            type="submit"
+            class="btn-analyze"
+            id="analyzeBtn"
+          >
+
+            <span class="btn-text">
+              AIエージェント分析開始
+            </span>
+
+            <span class="btn-badge">
+              5段階分析
+            </span>
+
           </button>
-          <p class="form-note">※ Gemini API + Workers AI による AIエージェント型多段分析</p>
+
+          <p class="form-note">
+            ※ Gemini API + Workers AI による匿名AIエージェント型多段分析
+          </p>
+
         </div>
+
       </form>
+
     </section>
 
-    <section class="loading-section" id="loadingSection" style="display:none;">
+    <!-- LOADING -->
+    <section
+      class="loading-section"
+      id="loadingSection"
+      style="display:none;"
+    >
+
       <div class="loading-inner">
+
         <div class="loading-spinner"></div>
-        <h3>AIエージェント分析中...</h3>
+
+        <h3>
+          AIエージェント分析中...
+        </h3>
+
         <div class="loading-steps">
-          <div class="loading-step">① KVナレッジ参照（外部ナレッジ検索）</div>
-          <div class="loading-step">② Workers AI 市場分類（タスク分解・前処理）</div>
-          <div class="loading-step">③ Gemini ペルソナ分析（多段AI処理）</div>
-          <div class="loading-step">④ Gemini 営業戦略生成（多段AI処理）</div>
-          <div class="loading-step">⑤ 分析結果ナレッジ蓄積（外部KV保存）</div>
-        </div>
-      </div>
-    </section>
 
-    <section class="result-section" id="resultSection" style="display:none;">
-      <div class="result-header">
-        <div class="section-label">ANALYSIS RESULT</div>
-        <h2 class="section-title">AI分析結果</h2>
-      </div>
-      <div class="result-meta" id="resultMeta"></div>
-      <div class="share-gauge-card" id="shareGaugeCard">
-        <div class="gauge-label-top">現在の市場ポジション</div>
-        <div class="gauge-bar-wrap">
-          <div class="gauge-bar">
-            <div class="gauge-fill" id="gaugeFill"></div>
+          <div class="loading-step">
+            ① KVナレッジ参照（外部ナレッジ検索）
           </div>
+
+          <div class="loading-step">
+            ② Workers AI 市場分類（タスク分解・前処理）
+          </div>
+
+          <div class="loading-step">
+            ③ Gemini ペルソナ分析（多段AI処理）
+          </div>
+
+          <div class="loading-step">
+            ④ Gemini 営業戦略生成（多段AI処理）
+          </div>
+
+          <div class="loading-step">
+            ⑤ 匿名分析結果ナレッジ蓄積（KV保存）
+          </div>
+
         </div>
-        <div class="gauge-info" id="gaugeInfo"></div>
+
       </div>
-      <div class="classification-row" id="classificationRow"></div>
-      <div class="result-tabs">
-        <button class="tab-btn active" data-tab="persona">ペルソナ分析</button>
-        <button class="tab-btn" data-tab="strategy">営業戦略</button>
-      </div>
-      <div class="tab-content active" id="tabPersona">
-        <div class="result-card" id="personaResult"></div>
-      </div>
-      <div class="tab-content" id="tabStrategy">
-        <div class="result-card" id="strategyResult"></div>
-      </div>
-      <div class="result-actions">
-        <button class="btn-secondary" id="copyBtn">結果コピー</button>
-        <button class="btn-secondary" id="resetBtn">新しい分析</button>
-      </div>
+
     </section>
 
-    <div class="error-banner" id="errorBanner" style="display:none;"></div>
+    <!-- RESULT -->
+    <section
+      class="result-section"
+      id="resultSection"
+      style="display:none;"
+    >
+
+      <div class="result-header">
+
+        <div class="section-label">
+          ANALYSIS RESULT
+        </div>
+
+        <h2 class="section-title">
+          AI分析結果
+        </h2>
+
+      </div>
+
+      <div
+        class="result-meta"
+        id="resultMeta"
+      ></div>
+
+      <!-- SHARE GAUGE -->
+      <div
+        class="share-gauge-card"
+        id="shareGaugeCard"
+      >
+
+        <div class="gauge-label-top">
+          現在の市場ポジション
+        </div>
+
+        <div class="gauge-bar-wrap">
+
+          <div class="gauge-bar">
+            <div
+              class="gauge-fill"
+              id="gaugeFill"
+            ></div>
+          </div>
+
+        </div>
+
+        <div
+          class="gauge-info"
+          id="gaugeInfo"
+        ></div>
+
+      </div>
+
+      <!-- CLASSIFICATION -->
+      <div
+        class="classification-row"
+        id="classificationRow"
+      ></div>
+
+      <!-- TABS -->
+      <div class="result-tabs">
+
+        <button
+          class="tab-btn active"
+          data-tab="persona"
+        >
+          ペルソナ分析
+        </button>
+
+        <button
+          class="tab-btn"
+          data-tab="strategy"
+        >
+          営業戦略
+        </button>
+
+      </div>
+
+      <!-- PERSONA -->
+      <div
+        class="tab-content active"
+        id="tabPersona"
+      >
+
+        <div
+          class="result-card"
+          id="personaResult"
+        ></div>
+
+      </div>
+
+      <!-- STRATEGY -->
+      <div
+        class="tab-content"
+        id="tabStrategy"
+      >
+
+        <div
+          class="result-card"
+          id="strategyResult"
+        ></div>
+
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="result-actions">
+
+        <button
+          class="btn-secondary"
+          id="copyBtn"
+        >
+          結果コピー
+        </button>
+
+        <button
+          class="btn-secondary"
+          id="resetBtn"
+        >
+          新しい分析
+        </button>
+
+      </div>
+
+    </section>
+
+    <!-- ERROR -->
+    <div
+      class="error-banner"
+      id="errorBanner"
+      style="display:none;"
+    ></div>
 
   </main>
 
+  <!-- FOOTER -->
   <footer class="site-footer">
-    <p>PersonaGrid は GitHub Pages + Cloudflare Workers + Workers AI + Gemini API により動作しています</p>
+
+    <p>
+      PersonaGrid は GitHub Pages + Cloudflare Workers + Workers AI + Gemini API により動作しています
+    </p>
+
     <div class="footer-tech">
+
       <span>Cloudflare Workers</span>
       <span>Workers AI</span>
       <span>Workers KV</span>
       <span>Gemini 2.0 Flash</span>
       <span>GitHub Pages</span>
+
     </div>
+
+    <div class="footer-policy">
+      匿名カテゴリ分析のみ対応 / 個人情報・企業情報入力禁止
+    </div>
+
   </footer>
 
+  <!-- API -->
   <script>
     window.API_BASE = "https://personagrid.gmo-k-watanabe.workers.dev";
   </script>
+
+  <!-- APP -->
   <script src="app.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
 </body>
 </html>
