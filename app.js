@@ -78,7 +78,7 @@ function containsSensitiveInfo(text = "") {
 
 function validateInputs(payload) {
   const targets = [
-    payload.marketCategory,
+    payload.analysisCategory,
     payload.productService,
     payload.competitors,
     payload.targetSegment,
@@ -251,22 +251,10 @@ async function runAnalysis() {
 
     const loadingInterval = animateLoadingSteps();
 
+    // 修正: 送信データのキー名をworkers.jsが要求する「analysisCategory」に合わせ、HTMLの正しいID「analysisCategory」から取得する
     const payload = {
-
-      market: sanitizeText(
-        document.getElementById("industry")?.value?.trim() || ""
-      ),
-
-      share: sanitizeText(
-        document.getElementById("currentShare")?.value?.trim() || ""
-      ),
-
-      competitor: sanitizeText(
-        document.getElementById("competitors")?.value?.trim() || ""
-      ),
-
-      marketCategory: sanitizeText(
-        document.getElementById("companyName")?.value?.trim() || ""
+      analysisCategory: sanitizeText(
+        document.getElementById("analysisCategory")?.value?.trim() || ""
       ),
 
       industry: sanitizeText(
@@ -326,7 +314,8 @@ async function runAnalysis() {
     completeLoadingSteps();
 
     if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.error || `HTTP ${response.status}`);
     }
 
     const data = await response.json();
