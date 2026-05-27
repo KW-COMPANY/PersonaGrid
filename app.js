@@ -1,4 +1,3 @@
-// File: app.js
 const WORKER_URL = "https://personagrid.gmo-k-watanabe.workers.dev";
 
 const SHARE_LEVELS = [
