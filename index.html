@@ -120,104 +120,169 @@
         </ul>
       </div>
 
+      <!-- 入力凡例 -->
+      <div class="form-legend">
+        <div class="legend-item">
+          <span class="badge-required">必須</span>
+          <span class="legend-text">分析に必要不可欠な項目</span>
+        </div>
+        <div class="legend-item">
+          <span class="badge-optional">任意</span>
+          <span class="legend-text">入力すると精度が向上する項目</span>
+        </div>
+      </div>
+
       <form class="analysis-form" id="analysisForm">
 
-        <div class="form-grid">
+        <!-- ============================================
+             必須入力セクション
+        ============================================ -->
+        <div class="form-section-block required-block">
 
-          <div class="form-group">
-            <label class="form-label" for="analysisCategory">分析対象カテゴリ</label>
-            <input
-              type="text"
-              id="analysisCategory"
-              class="form-input"
-              placeholder="例：BtoB SaaS / 製造DX / EC支援"
-              maxlength="100"
-            />
+          <div class="block-header">
+            <span class="block-badge required">REQUIRED</span>
+            <h3 class="block-title">必須入力項目</h3>
+            <p class="block-subtitle">分析を実行するために必要な情報です</p>
           </div>
 
-          <div class="form-group">
-            <label class="form-label" for="industry">業界・業種</label>
-            <input
-              type="text"
-              id="industry"
-              class="form-input"
-              placeholder="例：SaaS / 人材 / 製造"
-              maxlength="100"
-              required
-            />
-          </div>
+          <div class="form-grid">
 
-          <div class="form-group form-group--wide">
-            <label class="form-label" for="productService">商品・サービス概要</label>
-            <textarea
-              id="productService"
-              class="form-textarea"
-              placeholder="どのようなカテゴリ・特徴のサービスか（匿名ベース）"
-              maxlength="1200"
-            ></textarea>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="currentShare">現在の市場シェア(%)</label>
-            <div class="input-with-unit">
+            <div class="form-group is-required">
+              <label class="form-label" for="industry">
+                業界・業種
+                <span class="badge-required">必須</span>
+              </label>
               <input
-                type="number"
-                id="currentShare"
-                class="form-input"
-                placeholder="例：10.9"
-                min="0"
-                max="100"
-                step="0.1"
+                type="text"
+                id="industry"
+                class="form-input form-input--required"
+                placeholder="例：SaaS / 人材 / 製造"
+                maxlength="100"
                 required
               />
-              <span class="unit-label">%</span>
+              <div class="form-hint">業界カテゴリを匿名で入力してください</div>
             </div>
-            <div id="sharePreview" class="share-preview"></div>
+
+            <div class="form-group is-required">
+              <label class="form-label" for="currentShare">
+                現在の市場シェア(%)
+                <span class="badge-required">必須</span>
+              </label>
+              <div class="input-with-unit">
+                <input
+                  type="number"
+                  id="currentShare"
+                  class="form-input form-input--required"
+                  placeholder="例：10.9"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  required
+                />
+                <span class="unit-label">%</span>
+              </div>
+              <div id="sharePreview" class="share-preview"></div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ============================================
+             任意入力セクション
+        ============================================ -->
+        <div class="form-section-block optional-block">
+
+          <div class="block-header">
+            <span class="block-badge optional">OPTIONAL</span>
+            <h3 class="block-title">任意入力項目</h3>
+            <p class="block-subtitle">入力すると分析精度が大きく向上します</p>
           </div>
 
-          <div class="form-group">
-            <label class="form-label" for="marketSize">市場規模</label>
-            <input
-              type="text"
-              id="marketSize"
-              class="form-input"
-              placeholder="例：500億円"
-              maxlength="100"
-            />
-          </div>
+          <div class="form-grid">
 
-          <div class="form-group form-group--wide">
-            <label class="form-label" for="competitors">競合タイプ・競争環境</label>
-            <textarea
-              id="competitors"
-              class="form-textarea"
-              placeholder="例：外資系SaaS / 低価格帯サービス / 大手ERP系"
-              maxlength="1200"
-            ></textarea>
-          </div>
+            <div class="form-group is-optional">
+              <label class="form-label" for="analysisCategory">
+                分析対象カテゴリ
+                <span class="badge-optional">任意</span>
+              </label>
+              <input
+                type="text"
+                id="analysisCategory"
+                class="form-input"
+                placeholder="例：BtoB SaaS / 製造DX / EC支援"
+                maxlength="100"
+              />
+            </div>
 
-          <div class="form-group">
-            <label class="form-label" for="targetSegment">現在のターゲット層</label>
-            <input
-              type="text"
-              id="targetSegment"
-              class="form-input"
-              placeholder="例：従業員50〜300名企業"
-              maxlength="150"
-            />
-          </div>
+            <div class="form-group is-optional">
+              <label class="form-label" for="marketSize">
+                市場規模
+                <span class="badge-optional">任意</span>
+              </label>
+              <input
+                type="text"
+                id="marketSize"
+                class="form-input"
+                placeholder="例：500億円"
+                maxlength="100"
+              />
+            </div>
 
-          <div class="form-group">
-            <label class="form-label" for="salesGoal">営業目標・課題</label>
-            <input
-              type="text"
-              id="salesGoal"
-              class="form-input"
-              placeholder="例：半年で15%シェア"
-              maxlength="150"
-            />
-          </div>
+            <div class="form-group is-optional form-group--wide">
+              <label class="form-label" for="productService">
+                商品・サービス概要
+                <span class="badge-optional">任意</span>
+              </label>
+              <textarea
+                id="productService"
+                class="form-textarea"
+                placeholder="どのようなカテゴリ・特徴のサービスか（匿名ベース）"
+                maxlength="1200"
+              ></textarea>
+            </div>
 
+            <div class="form-group is-optional form-group--wide">
+              <label class="form-label" for="competitors">
+                競合タイプ・競争環境
+                <span class="badge-optional">任意</span>
+              </label>
+              <textarea
+                id="competitors"
+                class="form-textarea"
+                placeholder="例：外資系SaaS / 低価格帯サービス / 大手ERP系"
+                maxlength="1200"
+              ></textarea>
+            </div>
+
+            <div class="form-group is-optional">
+              <label class="form-label" for="targetSegment">
+                現在のターゲット層
+                <span class="badge-optional">任意</span>
+              </label>
+              <input
+                type="text"
+                id="targetSegment"
+                class="form-input"
+                placeholder="例：従業員50〜300名企業"
+                maxlength="150"
+              />
+            </div>
+
+            <div class="form-group is-optional">
+              <label class="form-label" for="salesGoal">
+                営業目標・課題
+                <span class="badge-optional">任意</span>
+              </label>
+              <input
+                type="text"
+                id="salesGoal"
+                class="form-input"
+                placeholder="例：半年で15%シェア"
+                maxlength="150"
+              />
+            </div>
+
+          </div>
         </div>
 
         <div class="form-actions">
