@@ -346,8 +346,6 @@ async function runAnalysis() {
 
       ・匿名カテゴリのみ入力してください<br>
       ・実在企業名や個人情報は禁止されています<br>
-      ・Cloudflare Workers が起動しているか確認してください<br>
-      ・ブラウザのF12コンソールも確認してください
     `);
 
   } finally {
