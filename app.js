@@ -274,7 +274,7 @@ function renderClassificationBadges(data) {
 }
 
 function markdownToHTML(text) {
-  if (!text) return "";
+  return marked.parse(text || "");
   return text
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
