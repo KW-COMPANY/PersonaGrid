@@ -3,650 +3,182 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>
-    PersonaGrid | シェア分析 AI エージェント
-  </title>
-
-  <meta
-    name="description"
-    content="営業・市場分析向けAIエージェント。市場シェア分析、ペルソナ生成、セグメント分析、営業戦略提案を自動生成。"
-  />
-
+  <title>PersonaGrid | シェア分析 AI エージェント</title>
+  <meta name="description" content="営業・市場分析向けAIエージェント。市場シェア分析、ペルソナ生成、セグメント分析、営業戦略提案を自動生成。" />
   <link rel="stylesheet" href="style.css" />
-
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
-  <link
-    href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 </head>
-
 <body>
 
-  <!-- ===================================================== -->
-  <!-- Header -->
-  <!-- ===================================================== -->
-
   <header class="site-header">
-
     <div class="header-inner">
-
       <div class="logo-block">
-
         <div class="logo-icon">
-
-          <svg
-            viewBox="0 0 32 32"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <circle
-              cx="16"
-              cy="16"
-              r="14"
-              stroke="currentColor"
-              stroke-width="1.5"
-            />
-
-            <path
-              d="M16 2 A14 14 0 0 1 30 16"
-              stroke="#00d4ff"
-              stroke-width="3"
-              stroke-linecap="round"
-            />
-
-            <circle
-              cx="16"
-              cy="16"
-              r="4"
-              fill="#00d4ff"
-            />
-
-            <line
-              x1="16"
-              y1="16"
-              x2="24"
-              y2="8"
-              stroke="#00d4ff"
-              stroke-width="1.5"
-            />
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M16 2 A14 14 0 0 1 30 16" stroke="#00d4ff" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="16" cy="16" r="4" fill="#00d4ff"/>
+            <line x1="16" y1="16" x2="24" y2="8" stroke="#00d4ff" stroke-width="1.5"/>
           </svg>
-
         </div>
-
         <div class="logo-text">
-
-          <span class="logo-main">
-            PersonaGrid
-          </span>
-
-          <span class="logo-sub">
-            AIエージェント型 シェア分析・営業戦略支援
-          </span>
-
+          <span class="logo-main">PersonaGrid</span>
+          <span class="logo-sub">AIエージェント型 シェア分析・営業戦略支援</span>
         </div>
-
       </div>
-
       <nav class="header-nav">
-
-        <span class="nav-badge">
-          AI Agent
-        </span>
-
-        <span class="nav-badge powered">
-          Gemini + Workers AI
-        </span>
-
+        <span class="nav-badge">AI Agent</span>
+        <span class="nav-badge powered">Gemini + Workers AI</span>
       </nav>
-
     </div>
-
   </header>
-
-  <!-- ===================================================== -->
-  <!-- Main -->
-  <!-- ===================================================== -->
 
   <main class="main-content">
 
-    <!-- ===================================================== -->
-    <!-- Hero -->
-    <!-- ===================================================== -->
-
     <section class="hero-section">
-
       <div class="hero-inner">
-
-        <div class="hero-badge">
-          SALES AI AGENT
-        </div>
-
-        <h1 class="hero-title">
-          市場シェア分析 × ペルソナ生成 × 営業戦略
-        </h1>
-
+        <div class="hero-badge">SALES AI AGENT</div>
+        <h1 class="hero-title">市場シェア分析 × ペルソナ生成 × 営業戦略</h1>
         <p class="hero-description">
           Gemini API と Cloudflare Workers AI による
           多段AI分析で、シェアポジション・ターゲット顧客・
           営業戦略を自動生成します。
         </p>
-
       </div>
-
     </section>
-
-    <!-- ===================================================== -->
-    <!-- Share Level -->
-    <!-- ===================================================== -->
 
     <section class="share-ladder-section">
-
-      <div class="section-label">
-        SHARE LEVEL FRAMEWORK
-      </div>
-
-      <h2 class="section-title">
-        シェアレベル 7段階分析
-      </h2>
-
+      <div class="section-label">SHARE LEVEL FRAMEWORK</div>
+      <h2 class="section-title">シェアレベル 7段階分析</h2>
       <div class="share-ladder">
-
-        <div class="share-card">
-          <div class="share-percent">73.9%</div>
-          <div class="share-name">独占シェア</div>
-          <div class="share-target">上限目標値</div>
-        </div>
-
-        <div class="share-card">
-          <div class="share-percent">41.7%</div>
-          <div class="share-name">相対的安定シェア</div>
-          <div class="share-target">安定目標値</div>
-        </div>
-
-        <div class="share-card">
-          <div class="share-percent">26.1%</div>
-          <div class="share-name">差別的優位シェア</div>
-          <div class="share-target">下限目標値</div>
-        </div>
-
-        <div class="share-card">
-          <div class="share-percent">19.3%</div>
-          <div class="share-name">並列的上位シェア</div>
-          <div class="share-target">上位目標値</div>
-        </div>
-
-        <div class="share-card">
-          <div class="share-percent">10.9%</div>
-          <div class="share-name">市場的影響シェア</div>
-          <div class="share-target">影響目標値</div>
-        </div>
-
-        <div class="share-card">
-          <div class="share-percent">6.8%</div>
-          <div class="share-name">競合的存在シェア</div>
-          <div class="share-target">存在目標値</div>
-        </div>
-
-        <div class="share-card">
-          <div class="share-percent">2.8%</div>
-          <div class="share-name">市場橋頭堡シェア</div>
-          <div class="share-target">拠点目標値</div>
-        </div>
-
+        <div class="share-card"><div class="share-percent">73.9%</div><div class="share-name">独占シェア</div><div class="share-target">上限目標値</div></div>
+        <div class="share-card"><div class="share-percent">41.7%</div><div class="share-name">相対的安定シェア</div><div class="share-target">安定目標値</div></div>
+        <div class="share-card"><div class="share-percent">26.1%</div><div class="share-name">差別的優位シェア</div><div class="share-target">下限目標値</div></div>
+        <div class="share-card"><div class="share-percent">19.3%</div><div class="share-name">並列的上位シェア</div><div class="share-target">上位目標値</div></div>
+        <div class="share-card"><div class="share-percent">10.9%</div><div class="share-name">市場的影響シェア</div><div class="share-target">影響目標値</div></div>
+        <div class="share-card"><div class="share-percent">6.8%</div><div class="share-name">競合的存在シェア</div><div class="share-target">存在目標値</div></div>
+        <div class="share-card"><div class="share-percent">2.8%</div><div class="share-name">市場橋頭堡シェア</div><div class="share-target">拠点目標値</div></div>
       </div>
-
     </section>
-
-    <!-- ===================================================== -->
-    <!-- Form -->
-    <!-- ===================================================== -->
 
     <section class="form-section">
-
-      <div class="section-label">
-        ANALYSIS INPUT
-      </div>
-
-      <h2 class="section-title">
-        市場・営業情報入力
-      </h2>
-
-      <form
-        class="analysis-form"
-        id="analysisForm"
-      >
-
+      <div class="section-label">ANALYSIS INPUT</div>
+      <h2 class="section-title">市場・営業情報入力</h2>
+      <form class="analysis-form" id="analysisForm">
         <div class="form-grid">
-
-          <!-- Company -->
           <div class="form-group">
-
-            <label
-              class="form-label"
-              for="companyName"
-            >
-              企業名・ブランド名
-            </label>
-
-            <input
-              type="text"
-              id="companyName"
-              class="form-input"
-              placeholder="例：株式会社サンプル"
-            />
-
+            <label class="form-label" for="companyName">企業名・ブランド名</label>
+            <input type="text" id="companyName" class="form-input" placeholder="例：株式会社サンプル" />
           </div>
-
-          <!-- Industry -->
           <div class="form-group">
-
-            <label
-              class="form-label"
-              for="industry"
-            >
-              業界・業種
-            </label>
-
-            <input
-              type="text"
-              id="industry"
-              class="form-input"
-              placeholder="例：SaaS / 人材 / 製造"
-              required
-            />
-
+            <label class="form-label" for="industry">業界・業種</label>
+            <input type="text" id="industry" class="form-input" placeholder="例：SaaS / 人材 / 製造" required />
           </div>
-
-          <!-- Product -->
           <div class="form-group form-group--wide">
-
-            <label
-              class="form-label"
-              for="productService"
-            >
-              商品・サービス概要
-            </label>
-
-            <textarea
-              id="productService"
-              class="form-textarea"
-              placeholder="どのような商品・サービスか"
-            ></textarea>
-
+            <label class="form-label" for="productService">商品・サービス概要</label>
+            <textarea id="productService" class="form-textarea" placeholder="どのような商品・サービスか"></textarea>
           </div>
-
-          <!-- Share -->
           <div class="form-group">
-
-            <label
-              class="form-label"
-              for="currentShare"
-            >
-              現在の市場シェア(%)
-            </label>
-
+            <label class="form-label" for="currentShare">現在の市場シェア(%)</label>
             <div class="input-with-unit">
-
-              <input
-                type="number"
-                id="currentShare"
-                class="form-input"
-                placeholder="例：10.9"
-                min="0"
-                max="100"
-                step="0.1"
-                required
-              />
-
-              <span class="unit-label">
-                %
-              </span>
-
+              <input type="number" id="currentShare" class="form-input" placeholder="例：10.9" min="0" max="100" step="0.1" required />
+              <span class="unit-label">%</span>
             </div>
-
             <div id="sharePreview"></div>
-
           </div>
-
-          <!-- Market Size -->
           <div class="form-group">
-
-            <label
-              class="form-label"
-              for="marketSize"
-            >
-              市場規模
-            </label>
-
-            <input
-              type="text"
-              id="marketSize"
-              class="form-input"
-              placeholder="例：500億円"
-            />
-
+            <label class="form-label" for="marketSize">市場規模</label>
+            <input type="text" id="marketSize" class="form-input" placeholder="例：500億円" />
           </div>
-
-          <!-- Competitors -->
           <div class="form-group form-group--wide">
-
-            <label
-              class="form-label"
-              for="competitors"
-            >
-              競合情報
-            </label>
-
-            <textarea
-              id="competitors"
-              class="form-textarea"
-              placeholder="競合企業・シェア・特徴など"
-            ></textarea>
-
+            <label class="form-label" for="competitors">競合情報</label>
+            <textarea id="competitors" class="form-textarea" placeholder="競合企業・シェア・特徴など"></textarea>
           </div>
-
-          <!-- Segment -->
           <div class="form-group">
-
-            <label
-              class="form-label"
-              for="targetSegment"
-            >
-              現在のターゲット層
-            </label>
-
-            <input
-              type="text"
-              id="targetSegment"
-              class="form-input"
-              placeholder="例：従業員50〜300名"
-            />
-
+            <label class="form-label" for="targetSegment">現在のターゲット層</label>
+            <input type="text" id="targetSegment" class="form-input" placeholder="例：従業員50〜300名" />
           </div>
-
-          <!-- Goal -->
           <div class="form-group">
-
-            <label
-              class="form-label"
-              for="salesGoal"
-            >
-              営業目標・課題
-            </label>
-
-            <input
-              type="text"
-              id="salesGoal"
-              class="form-input"
-              placeholder="例：半年で15%シェア"
-            />
-
+            <label class="form-label" for="salesGoal">営業目標・課題</label>
+            <input type="text" id="salesGoal" class="form-input" placeholder="例：半年で15%シェア" />
           </div>
-
         </div>
-
-        <!-- Submit -->
         <div class="form-actions">
-
-          <button
-            type="submit"
-            class="btn-analyze"
-            id="analyzeBtn"
-          >
-
-            <span class="btn-text">
-              AIエージェント分析開始
-            </span>
-
-            <span class="btn-badge">
-              5段階分析
-            </span>
-
+          <button type="submit" class="btn-analyze" id="analyzeBtn">
+            <span class="btn-text">AIエージェント分析開始</span>
+            <span class="btn-badge">5段階分析</span>
           </button>
-
-          <p class="form-note">
-            ※ Gemini API + Workers AI による
-            AIエージェント型多段分析
-          </p>
-
+          <p class="form-note">※ Gemini API + Workers AI による AIエージェント型多段分析</p>
         </div>
-
       </form>
-
     </section>
 
-    <!-- ===================================================== -->
-    <!-- Loading -->
-    <!-- ===================================================== -->
-
-    <section
-      class="loading-section"
-      id="loadingSection"
-      style="display:none;"
-    >
-
+    <section class="loading-section" id="loadingSection" style="display:none;">
       <div class="loading-inner">
-
         <div class="loading-spinner"></div>
-
-        <h3>
-          AIエージェント分析中...
-        </h3>
-
+        <h3>AIエージェント分析中...</h3>
         <div class="loading-steps">
-
-          <div class="loading-step">
-            KVナレッジ参照
-          </div>
-
-          <div class="loading-step">
-            Workers AI 市場分類
-          </div>
-
-          <div class="loading-step">
-            Gemini ペルソナ分析
-          </div>
-
-          <div class="loading-step">
-            Gemini 営業戦略生成
-          </div>
-
-          <div class="loading-step">
-            分析結果ナレッジ蓄積
-          </div>
-
+          <div class="loading-step">① KVナレッジ参照（外部ナレッジ検索）</div>
+          <div class="loading-step">② Workers AI 市場分類（タスク分解・前処理）</div>
+          <div class="loading-step">③ Gemini ペルソナ分析（多段AI処理）</div>
+          <div class="loading-step">④ Gemini 営業戦略生成（多段AI処理）</div>
+          <div class="loading-step">⑤ 分析結果ナレッジ蓄積（外部KV保存）</div>
         </div>
-
       </div>
-
     </section>
 
-    <!-- ===================================================== -->
-    <!-- Result -->
-    <!-- ===================================================== -->
-
-    <section
-      class="result-section"
-      id="resultSection"
-      style="display:none;"
-    >
-
+    <section class="result-section" id="resultSection" style="display:none;">
       <div class="result-header">
-
-        <div class="section-label">
-          ANALYSIS RESULT
-        </div>
-
-        <h2 class="section-title">
-          AI分析結果
-        </h2>
-
+        <div class="section-label">ANALYSIS RESULT</div>
+        <h2 class="section-title">AI分析結果</h2>
       </div>
-
-      <!-- Meta -->
-      <div
-        class="result-meta"
-        id="resultMeta"
-      ></div>
-
-      <!-- Share Gauge -->
-      <div
-        class="share-gauge-card"
-        id="shareGaugeCard"
-      >
-
-        <div class="gauge-label-top">
-          現在の市場ポジション
-        </div>
-
+      <div class="result-meta" id="resultMeta"></div>
+      <div class="share-gauge-card" id="shareGaugeCard">
+        <div class="gauge-label-top">現在の市場ポジション</div>
         <div class="gauge-bar-wrap">
-
           <div class="gauge-bar">
-
-            <div
-              class="gauge-fill"
-              id="gaugeFill"
-            ></div>
-
+            <div class="gauge-fill" id="gaugeFill"></div>
           </div>
-
         </div>
-
-        <div
-          class="gauge-info"
-          id="gaugeInfo"
-        ></div>
-
+        <div class="gauge-info" id="gaugeInfo"></div>
       </div>
-
-      <!-- AI Classification -->
-      <div
-        class="classification-row"
-        id="classificationRow"
-      ></div>
-
-      <!-- Tabs -->
+      <div class="classification-row" id="classificationRow"></div>
       <div class="result-tabs">
-
-        <button
-          class="tab-btn active"
-          data-tab="persona"
-        >
-          ペルソナ分析
-        </button>
-
-        <button
-          class="tab-btn"
-          data-tab="strategy"
-        >
-          営業戦略
-        </button>
-
+        <button class="tab-btn active" data-tab="persona">ペルソナ分析</button>
+        <button class="tab-btn" data-tab="strategy">営業戦略</button>
       </div>
-
-      <!-- Persona -->
-      <div
-        class="tab-content active"
-        id="tabPersona"
-      >
-
-        <div
-          class="result-card"
-          id="personaResult"
-        ></div>
-
+      <div class="tab-content active" id="tabPersona">
+        <div class="result-card" id="personaResult"></div>
       </div>
-
-      <!-- Strategy -->
-      <div
-        class="tab-content"
-        id="tabStrategy"
-      >
-
-        <div
-          class="result-card"
-          id="strategyResult"
-        ></div>
-
+      <div class="tab-content" id="tabStrategy">
+        <div class="result-card" id="strategyResult"></div>
       </div>
-
-      <!-- Buttons -->
       <div class="result-actions">
-
-        <button
-          class="btn-secondary"
-          id="copyBtn"
-        >
-          結果コピー
-        </button>
-
-        <button
-          class="btn-secondary"
-          id="resetBtn"
-        >
-          新しい分析
-        </button>
-
+        <button class="btn-secondary" id="copyBtn">結果コピー</button>
+        <button class="btn-secondary" id="resetBtn">新しい分析</button>
       </div>
-
     </section>
 
-    <!-- Error -->
-    <div
-      class="error-banner"
-      id="errorBanner"
-      style="display:none;"
-    ></div>
+    <div class="error-banner" id="errorBanner" style="display:none;"></div>
 
   </main>
 
-  <!-- ===================================================== -->
-  <!-- Footer -->
-  <!-- ===================================================== -->
-
   <footer class="site-footer">
-
-    <p>
-      PersonaGrid は
-      GitHub Pages +
-      Cloudflare Workers +
-      Workers AI +
-      Gemini API
-      により動作しています
-    </p>
-
+    <p>PersonaGrid は GitHub Pages + Cloudflare Workers + Workers AI + Gemini API により動作しています</p>
     <div class="footer-tech">
-
       <span>Cloudflare Workers</span>
-
       <span>Workers AI</span>
-
       <span>Workers KV</span>
-
       <span>Gemini 2.0 Flash</span>
-
       <span>GitHub Pages</span>
-
     </div>
-
   </footer>
 
-  <!-- ===================================================== -->
-  <!-- API Endpoint -->
-  <!-- ===================================================== -->
-
   <script>
-
-    window.API_BASE =
-      "https://personagrid.gmo-k-watanabe.workers.dev";
-
+    window.API_BASE = "https://personagrid.gmo-k-watanabe.workers.dev";
   </script>
-
   <script src="app.js"></script>
 
 </body>
