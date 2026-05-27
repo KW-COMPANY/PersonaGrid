@@ -274,7 +274,8 @@ function renderClassificationBadges(data) {
 }
 
 function markdownToHTML(text) {
-  return marked.parse(text || "");
+  const raw = marked.parse(text || "");
+  return DOMPurify.sanitize(raw);
 }
 
 function bindTabs() {
