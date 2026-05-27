@@ -302,9 +302,8 @@ p {
   margin-bottom: 22px;
 }
 
-/* 修正: クラス指定の抜け（.hero-title）を修正 */
 .hero-title {
-  max-width: 860px;
+  max-width: 800px;
 
   margin-bottom: 18px;
 
