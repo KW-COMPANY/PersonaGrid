@@ -1,4 +1,3 @@
-<!-- File: index.html -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -68,8 +67,8 @@
 
         <p class="hero-description">
           外部ナレッジ連携・多段AI処理・タスク分解・ナレッジ集約を備えた
-          匿名市場分析AIエージェント。シェアポジション・ターゲット顧客・
-          営業戦略を自動生成します。
+          匿名市場分析AIエージェント。年商を入力するだけで、シェアポジション・
+          ターゲット顧客・営業戦略を自動生成します。
         </p>
 
       </div>
@@ -86,11 +85,11 @@
         </div>
         <div class="safe-ai-item">
           <div class="safe-ai-label">MULTI-STEP</div>
-          <div class="safe-ai-value">6段パイプライン</div>
+          <div class="safe-ai-value">7段パイプライン</div>
         </div>
         <div class="safe-ai-item">
           <div class="safe-ai-label">KNOWLEDGE</div>
-          <div class="safe-ai-value">KV + 内蔵KB</div>
+          <div class="safe-ai-value">KV + 市場規模KB</div>
         </div>
         <div class="safe-ai-item">
           <div class="safe-ai-label">DOMAIN</div>
@@ -164,23 +163,23 @@
             </div>
 
             <div class="form-group is-required">
-              <label class="form-label" for="currentShare">
-                現在の市場シェア(%)
+              <label class="form-label" for="annualSales">
+                年商（売上高）
                 <span class="badge-required">必須</span>
               </label>
               <div class="input-with-unit">
                 <input
                   type="number"
-                  id="currentShare"
+                  id="annualSales"
                   class="form-input form-input--required"
-                  placeholder="例：10.9"
+                  placeholder="例：50000"
                   min="0"
-                  max="100"
-                  step="0.1"
+                  step="1"
                   required
                 />
-                <span class="unit-label">%</span>
+                <span class="unit-label">万円</span>
               </div>
+              <div class="form-hint">年商を「万円」単位で入力してください（例：5億円→50000）</div>
               <div id="sharePreview" class="share-preview"></div>
             </div>
 
@@ -216,16 +215,21 @@
 
             <div class="form-group is-optional">
               <label class="form-label" for="marketSize">
-                市場規模
+                市場規模（任意・上書き用）
                 <span class="badge-optional">任意</span>
               </label>
-              <input
-                type="text"
-                id="marketSize"
-                class="form-input"
-                placeholder="例：500億円"
-                maxlength="100"
-              />
+              <div class="input-with-unit">
+                <input
+                  type="number"
+                  id="marketSize"
+                  class="form-input"
+                  placeholder="例：500（=500億円）"
+                  min="0"
+                  step="1"
+                />
+                <span class="unit-label">億円</span>
+              </div>
+              <div class="form-hint">未入力の場合、業界別の標準市場規模を自動参照します</div>
             </div>
 
             <div class="form-group is-optional form-group--wide">
@@ -288,7 +292,7 @@
         <div class="form-actions">
           <button type="submit" class="btn-analyze" id="analyzeBtn">
             <span class="btn-text">AIエージェント分析開始</span>
-            <span class="btn-badge">6段パイプライン</span>
+            <span class="btn-badge">7段パイプライン</span>
           </button>
         </div>
 
@@ -302,11 +306,12 @@
         <h3>AIエージェント分析中...</h3>
         <div class="loading-steps">
           <div class="loading-step">① 入力サニタイズ・タスク分解</div>
-          <div class="loading-step">② 外部ナレッジ検索（Wikipedia連携）</div>
-          <div class="loading-step">③ 内部ナレッジ参照（KV + 内蔵KB）</div>
-          <div class="loading-step">④ AI市場分類（多段処理）</div>
-          <div class="loading-step">⑤ ペルソナ生成 → 要約 → 戦略 → セグメント（多段AI）</div>
-          <div class="loading-step">⑥ 匿名ナレッジ蓄積（KV保存）</div>
+          <div class="loading-step">② 業界別市場規模参照・年商シェア換算</div>
+          <div class="loading-step">③ 外部ナレッジ検索（Wikipedia連携）</div>
+          <div class="loading-step">④ 内部ナレッジ参照（KV + 内蔵KB）</div>
+          <div class="loading-step">⑤ AI市場分類（多段処理）</div>
+          <div class="loading-step">⑥ ペルソナ生成 → 要約 → 戦略 → セグメント（多段AI）</div>
+          <div class="loading-step">⑦ 匿名ナレッジ蓄積（KV保存）</div>
         </div>
       </div>
     </section>
@@ -362,8 +367,8 @@
     </div>
     <div class="footer-tech">
       <span>External: Wikipedia API</span>
-      <span>Multi-Step: 6 Stage Pipeline</span>
-      <span>Knowledge: KV + Builtin KB</span>
+      <span>Multi-Step: 7 Stage Pipeline</span>
+      <span>Knowledge: KV + Market KB</span>
       <span>Domain: Sales Strategy</span>
     </div>
   </footer>
