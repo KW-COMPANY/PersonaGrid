@@ -10,6 +10,48 @@ const SHARE_LEVELS = [
   { threshold: 2.8, name: "市場橋頭堡シェア", label: "拠点目標値", color: "#64748b", description: "市場参入初期フェーズ" },
 ];
 
+// 業界別 標準市場規模（億円）。フロント側プレビュー用の簡易テーブル。
+// Worker側にも同等の正式テーブルを保持しており、最終算出はWorker側が正となる。
+const INDUSTRY_MARKET_SIZE = {
+  "saas": 1.4,
+  "人材": 9.0,
+  "製造": 320.0,
+  "製造dx": 2.0,
+  "ec": 22.0,
+  "小売": 150.0,
+  "飲食": 25.0,
+  "不動産": 48.0,
+  "建設": 60.0,
+  "医療": 45.0,
+  "介護": 13.0,
+  "物流": 30.0,
+  "広告": 7.0,
+  "金融": 90.0,
+  "教育": 9.0,
+  "it": 14.0,
+  "コンサル": 7.0,
+};
+
+// 業界別市場規模（億円）を取得。万円換算用に「億円」で返す。
+function lookupMarketSize(industry = "") {
+  const key = String(industry).toLowerCase().replace(/\s+/g, "");
+  for (const name in INDUSTRY_MARKET_SIZE) {
+    if (key.includes(name)) {
+      return INDUSTRY_MARKET_SIZE[name] * 10000; // 億円 → 万円
+    }
+  }
+  return null;
+}
+
+// 年商（万円）と市場規模（万円）から推定シェア(%)を算出
+function calcShareFromSales(annualSalesManyen, marketSizeManyen) {
+  const sales = parseFloat(annualSalesManyen);
+  const market = parseFloat(marketSizeManyen);
+  if (!sales || !market || market <= 0) return null;
+  const share = (sales / market) * 100;
+  return Math.min(share, 100);
+}
+
 // クライアント側の事前チェック（厳格すぎる検出を緩和）
 const SENSITIVE_PATTERNS = [
   /株式会社/g,
@@ -149,31 +191,64 @@ function renderShareLadder() {
   `).join("");
 }
 
+// 年商入力に応じて推定シェアをプレビュー表示
 function bindShareInput() {
-  const input = document.getElementById("currentShare");
+  const salesInput = document.getElementById("annualSales");
+  const industryInput = document.getElementById("industry");
+  const marketInput = document.getElementById("marketSize");
   const preview = document.getElementById("sharePreview");
-  if (!input || !preview) return;
+  if (!salesInput || !preview) return;
 
-  input.addEventListener("input", () => {
-    const val = parseFloat(input.value);
-    if (isNaN(val)) {
+  const updatePreview = () => {
+    const sales = parseFloat(salesInput.value);
+    if (isNaN(sales) || sales <= 0) {
       preview.innerHTML = "";
       return;
     }
 
-    const current = getShareLevel(val);
-    const next = getNextLevel(val);
-    const gap = next ? (next.threshold - val).toFixed(1) : 0;
+    // 市場規模の決定：任意入力（億円→万円換算）優先、なければ業界テーブル参照
+    let marketManyen = null;
+    const manualMarket = parseFloat(marketInput?.value);
+    if (!isNaN(manualMarket) && manualMarket > 0) {
+      marketManyen = manualMarket * 10000; // 億円 → 万円
+    } else {
+      marketManyen = lookupMarketSize(industryInput?.value || "");
+    }
+
+    if (!marketManyen) {
+      preview.innerHTML = `
+        <span style="color:#7a8ca8;font-size:0.78rem;">
+          市場規模が未特定です。任意欄に市場規模（億円）を入力すると立ち位置を即時プレビューできます。
+        </span>
+      `;
+      return;
+    }
+
+    const share = calcShareFromSales(sales, marketManyen);
+    if (share == null) {
+      preview.innerHTML = "";
+      return;
+    }
+
+    const current = getShareLevel(share);
+    const next = getNextLevel(share);
+    const gap = next ? (next.threshold - share).toFixed(1) : 0;
 
     preview.innerHTML = `
-      <span style="color:${current.color};font-weight:700;">▶ ${current.name}</span>
+      <span style="color:${current.color};font-weight:700;">
+        ▶ 推定シェア ${share.toFixed(1)}%（${current.name}）
+      </span>
       ${
         next
           ? `<span style="color:#7a8ca8;margin-left:8px;font-size:0.78rem;">次レベルまで +${gap}%</span>`
           : `<span style="color:#f5c842;margin-left:8px;font-size:0.78rem;">👑 最高レベル</span>`
       }
     `;
-  });
+  };
+
+  salesInput.addEventListener("input", updatePreview);
+  industryInput?.addEventListener("input", updatePreview);
+  marketInput?.addEventListener("input", updatePreview);
 }
 
 function bindForm() {
@@ -203,7 +278,7 @@ async function runAnalysis() {
       analysisCategory: sanitizeText(document.getElementById("analysisCategory")?.value?.trim() || ""),
       industry: sanitizeText(document.getElementById("industry")?.value?.trim() || ""),
       productService: sanitizeText(document.getElementById("productService")?.value?.trim() || ""),
-      currentShare: sanitizeText(document.getElementById("currentShare")?.value?.trim() || ""),
+      annualSales: sanitizeText(document.getElementById("annualSales")?.value?.trim() || ""),
       marketSize: sanitizeText(document.getElementById("marketSize")?.value?.trim() || ""),
       competitors: sanitizeText(document.getElementById("competitors")?.value?.trim() || ""),
       targetSegment: sanitizeText(document.getElementById("targetSegment")?.value?.trim() || ""),
@@ -216,8 +291,8 @@ async function runAnalysis() {
       throw new Error("業界・業種を入力してください");
     }
 
-    if (!payload.currentShare) {
-      throw new Error("市場シェアを入力してください");
+    if (!payload.annualSales) {
+      throw new Error("年商を入力してください");
     }
 
     const response = await fetch(`${WORKER_URL}/api/analyze`, {
@@ -293,10 +368,10 @@ function renderResult(data) {
   const personaResult = document.getElementById("personaResult");
   const strategyResult = document.getElementById("strategyResult");
 
+  // シェアはWorker側で年商から算出された値を最優先
   const currentShare = parseFloat(
     data.meta?.currentShare ||
     data.currentShare ||
-    document.getElementById("currentShare")?.value ||
     0
   );
 
@@ -304,7 +379,7 @@ function renderResult(data) {
   const nextLevel = getNextLevel(currentShare);
   const gap = nextLevel ? (nextLevel.threshold - currentShare).toFixed(1) : 0;
 
-  renderGauge(currentShare, currentLevel, nextLevel, gap);
+  renderGauge(currentShare, currentLevel, nextLevel, gap, data);
   renderClassificationBadges(data);
 
   const pipeline = Array.isArray(data.meta?.agentPipeline)
@@ -327,9 +402,24 @@ function renderResult(data) {
     `
     : "";
 
+  // 年商・市場規模・推定シェアの算出根拠を表示
+  const calcHTML = data.meta?.shareCalc
+    ? `
+      <h2>年商ベースの立ち位置算出</h2>
+      <blockquote>
+        年商: ${escapeHtml(String(data.meta.shareCalc.annualSales))}万円<br>
+        参照市場規模: ${escapeHtml(String(data.meta.shareCalc.marketSize))}億円
+        （${escapeHtml(data.meta.shareCalc.marketSizeSource)}）<br>
+        推定シェア: <strong>${escapeHtml(String(data.meta.shareCalc.share))}%</strong>
+      </blockquote>
+    `
+    : "";
+
   const personaHTML = `
     <h2>シェア分類</h2>
     <p>${data.meta?.currentLevel?.name || currentLevel.name}</p>
+
+    ${calcHTML}
 
     <h2>匿名市場ペルソナ分析</h2>
     <div>${markdownToHTML(data.persona || "データなし")}</div>
@@ -364,7 +454,7 @@ function renderResult(data) {
   }, 100);
 }
 
-function renderGauge(shareNum, currentLevel, nextLevel, shareGap) {
+function renderGauge(shareNum, currentLevel, nextLevel, shareGap, data) {
   const gaugeFill = document.getElementById("gaugeFill");
   const gaugeInfo = document.getElementById("gaugeInfo");
   const gaugeBar = document.querySelector(".gauge-bar");
@@ -400,9 +490,13 @@ function renderGauge(shareNum, currentLevel, nextLevel, shareGap) {
 
   gaugeBar.appendChild(markers);
 
+  const salesLabel = data?.meta?.shareCalc?.annualSales
+    ? `年商${data.meta.shareCalc.annualSales}万円`
+    : "";
+
   gaugeInfo.innerHTML = `
     <div class="gauge-stat">
-      <span class="gauge-stat-label">現在シェア</span>
+      <span class="gauge-stat-label">推定シェア${salesLabel ? "（" + salesLabel + "）" : ""}</span>
       <span class="gauge-stat-value" style="color:${currentLevel.color}">${shareNum}%</span>
       <span style="font-size:0.78rem;">${currentLevel.name}</span>
     </div>
