@@ -15,8 +15,8 @@ const SHARE_LEVELS = [
 const INDUSTRY_MARKET_SIZE = {
   "saas": 1.4,
   "人材": 9.0,
-  "製造": 320.0,
   "製造dx": 2.0,
+  "製造": 320.0,
   "ec": 22.0,
   "小売": 150.0,
   "飲食": 25.0,
@@ -72,10 +72,12 @@ const SENSITIVE_PATTERNS = [
 document.addEventListener("DOMContentLoaded", () => {
   renderShareLadder();
   bindShareInput();
+  bindSalesPresets();
   bindForm();
   bindTabs();
   bindResultActions();
   injectPrivacyNotice();
+  restoreSharedResult();
 });
 
 function injectPrivacyNotice() {
@@ -168,6 +170,17 @@ function getNextLevel(percent) {
   return null;
 }
 
+// 万円 → 読みやすい円表記
+function formatManyen(manyen) {
+  const v = parseFloat(manyen);
+  if (isNaN(v)) return "—";
+  if (v >= 10000) {
+    const oku = v / 10000;
+    return `${(Math.round(oku * 10) / 10).toLocaleString()}億円`;
+  }
+  return `${Math.round(v).toLocaleString()}万円`;
+}
+
 function renderShareLadder() {
   const container = document.getElementById("shareLadder");
   if (!container) return;
@@ -191,7 +204,49 @@ function renderShareLadder() {
   `).join("");
 }
 
-// 年商入力に応じて推定シェアをプレビュー表示
+// B-1: プリセットボタン
+function bindSalesPresets() {
+  const presets = document.getElementById("salesPresets");
+  const salesInput = document.getElementById("annualSales");
+  if (!presets || !salesInput) return;
+
+  presets.querySelectorAll(".sales-preset-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      salesInput.value = btn.dataset.sales;
+      salesInput.dispatchEvent(new Event("input", { bubbles: true }));
+      presets.querySelectorAll(".sales-preset-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+    });
+  });
+}
+
+// 入力からプレビュー用シェアを計算（市場規模ソースも返す）
+function computePreviewShare() {
+  const salesInput = document.getElementById("annualSales");
+  const industryInput = document.getElementById("industry");
+  const marketInput = document.getElementById("marketSize");
+
+  const sales = parseFloat(salesInput?.value);
+  if (isNaN(sales) || sales <= 0) return null;
+
+  let marketManyen = null;
+  let source = "";
+  const manualMarket = parseFloat(marketInput?.value);
+  if (!isNaN(manualMarket) && manualMarket > 0) {
+    marketManyen = manualMarket * 10000;
+    source = "manual";
+  } else {
+    marketManyen = lookupMarketSize(industryInput?.value || "");
+    if (marketManyen) source = "kb";
+  }
+
+  if (!marketManyen) return { share: null, sales, marketManyen: null, source: "none" };
+
+  const share = calcShareFromSales(sales, marketManyen);
+  return { share, sales, marketManyen, source };
+}
+
+// B-2: リアルタイムゲージ + プレビューテキスト
 function bindShareInput() {
   const salesInput = document.getElementById("annualSales");
   const industryInput = document.getElementById("industry");
@@ -200,36 +255,25 @@ function bindShareInput() {
   if (!salesInput || !preview) return;
 
   const updatePreview = () => {
-    const sales = parseFloat(salesInput.value);
-    if (isNaN(sales) || sales <= 0) {
+    const result = computePreviewShare();
+
+    if (!result) {
       preview.innerHTML = "";
+      hideLiveGauge();
       return;
     }
 
-    // 市場規模の決定：任意入力（億円→万円換算）優先、なければ業界テーブル参照
-    let marketManyen = null;
-    const manualMarket = parseFloat(marketInput?.value);
-    if (!isNaN(manualMarket) && manualMarket > 0) {
-      marketManyen = manualMarket * 10000; // 億円 → 万円
-    } else {
-      marketManyen = lookupMarketSize(industryInput?.value || "");
-    }
-
-    if (!marketManyen) {
+    if (result.share == null) {
       preview.innerHTML = `
         <span style="color:#7a8ca8;font-size:0.78rem;">
           市場規模が未特定です。任意欄に市場規模（億円）を入力すると立ち位置を即時プレビューできます。
         </span>
       `;
+      hideLiveGauge();
       return;
     }
 
-    const share = calcShareFromSales(sales, marketManyen);
-    if (share == null) {
-      preview.innerHTML = "";
-      return;
-    }
-
+    const share = result.share;
     const current = getShareLevel(share);
     const next = getNextLevel(share);
     const gap = next ? (next.threshold - share).toFixed(1) : 0;
@@ -244,11 +288,42 @@ function bindShareInput() {
           : `<span style="color:#f5c842;margin-left:8px;font-size:0.78rem;">👑 最高レベル</span>`
       }
     `;
+
+    renderLiveGauge(share, current, next, gap);
   };
 
   salesInput.addEventListener("input", updatePreview);
   industryInput?.addEventListener("input", updatePreview);
   marketInput?.addEventListener("input", updatePreview);
+}
+
+// B-2: リアルタイムゲージ描画
+function renderLiveGauge(share, current, next, gap) {
+  const card = document.getElementById("liveGaugeCard");
+  const fill = document.getElementById("liveGaugeFill");
+  const info = document.getElementById("liveGaugeInfo");
+  if (!card || !fill || !info) return;
+
+  card.style.display = "block";
+  fill.style.width = `${Math.min(share, 100)}%`;
+  fill.style.background = `linear-gradient(90deg, ${hexToRgba(current.color, 0.5)}, ${current.color})`;
+
+  info.innerHTML = `
+    <span style="color:${current.color};font-weight:700;font-size:0.95rem;">
+      推定シェア ${share.toFixed(1)}%
+    </span>
+    <span style="color:${current.color};font-size:0.8rem;margin-left:8px;">${current.name}</span>
+    ${
+      next
+        ? `<span style="color:#7a8ca8;font-size:0.78rem;margin-left:10px;">次レベル ${next.name} まで +${gap}%</span>`
+        : `<span style="color:#f5c842;font-size:0.78rem;margin-left:10px;">👑 最高レベル</span>`
+    }
+  `;
+}
+
+function hideLiveGauge() {
+  const card = document.getElementById("liveGaugeCard");
+  if (card) card.style.display = "none";
 }
 
 function bindForm() {
@@ -280,6 +355,7 @@ async function runAnalysis() {
       productService: sanitizeText(document.getElementById("productService")?.value?.trim() || ""),
       annualSales: sanitizeText(document.getElementById("annualSales")?.value?.trim() || ""),
       marketSize: sanitizeText(document.getElementById("marketSize")?.value?.trim() || ""),
+      growthRate: sanitizeText(document.getElementById("growthRate")?.value?.trim() || ""),
       competitors: sanitizeText(document.getElementById("competitors")?.value?.trim() || ""),
       targetSegment: sanitizeText(document.getElementById("targetSegment")?.value?.trim() || ""),
       salesGoal: sanitizeText(document.getElementById("salesGoal")?.value?.trim() || ""),
@@ -351,7 +427,7 @@ function animateLoadingSteps() {
       current++;
       steps[current].classList.add("active");
     }
-  }, 2500);
+  }, 2000);
 
   return interval;
 }
@@ -379,7 +455,23 @@ function renderResult(data) {
   const nextLevel = getNextLevel(currentShare);
   const gap = nextLevel ? (nextLevel.threshold - currentShare).toFixed(1) : 0;
 
+  // B-3: サマリーヒーロー
+  renderSummaryHero(currentShare, currentLevel, nextLevel, gap, data);
+
+  // A-3: やるべきことTOP3
+  renderActionTop3(data);
+
   renderGauge(currentShare, currentLevel, nextLevel, gap, data);
+
+  // A-1 / A-2: 目標年商逆算・業界内順位
+  renderInsightRow(data, currentLevel, nextLevel);
+
+  // A-5: 3年シミュレーション
+  renderSimulation(data);
+
+  // A-4: 匿名ベンチマーク
+  renderBenchmark(data, currentShare);
+
   renderClassificationBadges(data);
 
   const pipeline = Array.isArray(data.meta?.agentPipeline)
@@ -441,11 +533,17 @@ function renderResult(data) {
 
   const meta = document.getElementById("resultMeta");
   if (meta) {
+    const idNote = data.meta?.resultId
+      ? `｜ ID: ${escapeHtml(data.meta.resultId)}`
+      : "";
     meta.innerHTML = `
       Generated: ${new Date().toLocaleString("ja-JP")}
-      ｜ PersonaGrid Anonymous AI Agent
+      ｜ PersonaGrid Anonymous AI Agent ${idNote}
     `;
   }
+
+  // 共有用に結果IDを保持
+  window.__lastResultId = data.meta?.resultId || "";
 
   showResult();
 
@@ -454,10 +552,188 @@ function renderResult(data) {
   }, 100);
 }
 
+// B-3: サマリーヒーロー描画
+function renderSummaryHero(share, currentLevel, nextLevel, gap, data) {
+  const hero = document.getElementById("summaryHero");
+  if (!hero) return;
+
+  const rankText = data.meta?.industryRank?.label || "—";
+
+  hero.innerHTML = `
+    <div class="summary-hero-item">
+      <div class="summary-hero-key">推定市場シェア</div>
+      <div class="summary-hero-val" style="color:${currentLevel.color}">${share}%</div>
+    </div>
+    <div class="summary-hero-divider"></div>
+    <div class="summary-hero-item">
+      <div class="summary-hero-key">シェア分類</div>
+      <div class="summary-hero-val" style="color:${currentLevel.color};font-size:1.1rem;">${currentLevel.name}</div>
+    </div>
+    <div class="summary-hero-divider"></div>
+    <div class="summary-hero-item">
+      <div class="summary-hero-key">${nextLevel ? "次レベルまで" : "到達状態"}</div>
+      <div class="summary-hero-val" style="color:${nextLevel ? nextLevel.color : "#f5c842"};font-size:1.3rem;">
+        ${nextLevel ? "+" + gap + "%" : "👑 MAX"}
+      </div>
+    </div>
+    <div class="summary-hero-divider"></div>
+    <div class="summary-hero-item">
+      <div class="summary-hero-key">業界内ポジション</div>
+      <div class="summary-hero-val" style="font-size:1rem;">${escapeHtml(rankText)}</div>
+    </div>
+  `;
+}
+
+// A-3: やるべきことTOP3
+function renderActionTop3(data) {
+  const box = document.getElementById("actionTop3");
+  if (!box) return;
+
+  const actions = Array.isArray(data.meta?.actionTop3) ? data.meta.actionTop3 : [];
+  if (!actions.length) {
+    box.innerHTML = "";
+    return;
+  }
+
+  box.innerHTML = `
+    <div class="action-top3-title">📌 今すぐ着手すべきアクション TOP3</div>
+    <div class="action-top3-grid">
+      ${actions.map((a, i) => `
+        <div class="action-top3-item">
+          <div class="action-top3-num">${i + 1}</div>
+          <div class="action-top3-text">${escapeHtml(a)}</div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+// A-1 / A-2: 目標年商逆算・業界内順位
+function renderInsightRow(data, currentLevel, nextLevel) {
+  const row = document.getElementById("insightRow");
+  if (!row) return;
+
+  const calc = data.meta?.shareCalc || {};
+  const rank = data.meta?.industryRank || {};
+
+  const cards = [];
+
+  // A-1: 次レベルまでの目標年商
+  if (data.meta?.nextLevelTarget && nextLevel) {
+    const t = data.meta.nextLevelTarget;
+    cards.push(`
+      <div class="insight-card">
+        <div class="insight-card-label">次レベル「${escapeHtml(nextLevel.name)}」到達に必要な年商</div>
+        <div class="insight-card-value" style="color:${nextLevel.color}">${escapeHtml(formatManyen(t.requiredSales))}</div>
+        <div class="insight-card-sub">現在からあと <strong>${escapeHtml(formatManyen(t.salesGap))}</strong> の上積みが必要</div>
+      </div>
+    `);
+  }
+
+  // A-2: 業界内推定順位
+  if (rank.label) {
+    cards.push(`
+      <div class="insight-card">
+        <div class="insight-card-label">業界内 推定ポジション</div>
+        <div class="insight-card-value" style="color:${currentLevel.color}">${escapeHtml(rank.label)}</div>
+        <div class="insight-card-sub">${escapeHtml(rank.note || "")}</div>
+      </div>
+    `);
+  }
+
+  if (!cards.length) {
+    row.innerHTML = "";
+    return;
+  }
+
+  row.innerHTML = cards.join("");
+}
+
+// A-5: 3年シミュレーション
+function renderSimulation(data) {
+  const card = document.getElementById("simulationCard");
+  if (!card) return;
+
+  const sim = data.meta?.simulation;
+  if (!sim || !Array.isArray(sim.years) || !sim.years.length) {
+    card.style.display = "none";
+    return;
+  }
+
+  card.style.display = "block";
+
+  const rows = sim.years.map(y => {
+    const lv = getShareLevel(y.share);
+    return `
+      <div class="sim-row">
+        <div class="sim-row-year">${escapeHtml(String(y.label))}</div>
+        <div class="sim-row-bar-wrap">
+          <div class="sim-row-bar" style="width:${Math.min(y.share, 100)}%;background:linear-gradient(90deg,${hexToRgba(lv.color,0.5)},${lv.color});"></div>
+        </div>
+        <div class="sim-row-meta">
+          <span style="color:${lv.color};font-weight:700;">${y.share}%</span>
+          <span class="sim-row-level">${lv.name}</span>
+          <span class="sim-row-sales">${escapeHtml(formatManyen(y.sales))}</span>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  card.innerHTML = `
+    <div class="sim-title">📈 3年後までのシェア成長シミュレーション</div>
+    <div class="sim-note">想定年成長率 ${escapeHtml(String(sim.growthRate))}% で試算（市場規模は一定と仮定した簡易予測）</div>
+    <div class="sim-body">${rows}</div>
+  `;
+}
+
+// A-4: 匿名ベンチマーク
+function renderBenchmark(data, currentShare) {
+  const card = document.getElementById("benchmarkCard");
+  if (!card) return;
+
+  const bm = data.meta?.benchmark;
+  if (!bm || bm.sampleCount == null || bm.sampleCount <= 0) {
+    card.style.display = "none";
+    return;
+  }
+
+  card.style.display = "block";
+
+  const diff = (currentShare - bm.avgShare).toFixed(1);
+  const isAbove = currentShare >= bm.avgShare;
+  const diffColor = isAbove ? "#22c55e" : "#f59e0b";
+  const diffText = isAbove
+    ? `業界平均より <strong>+${diff}%</strong> 上位`
+    : `業界平均より <strong>${diff}%</strong> 下位`;
+
+  card.innerHTML = `
+    <div class="benchmark-title">📊 匿名ベンチマーク（同業界分析データ）</div>
+    <div class="benchmark-grid">
+      <div class="benchmark-item">
+        <div class="benchmark-key">あなたの推定シェア</div>
+        <div class="benchmark-val" style="color:#00d4ff;">${currentShare}%</div>
+      </div>
+      <div class="benchmark-item">
+        <div class="benchmark-key">業界内 匿名平均シェア</div>
+        <div class="benchmark-val">${escapeHtml(String(bm.avgShare))}%</div>
+      </div>
+      <div class="benchmark-item">
+        <div class="benchmark-key">比較サンプル数</div>
+        <div class="benchmark-val">${escapeHtml(String(bm.sampleCount))}件</div>
+      </div>
+      <div class="benchmark-item">
+        <div class="benchmark-key">相対評価</div>
+        <div class="benchmark-val" style="color:${diffColor};font-size:0.95rem;">${diffText}</div>
+      </div>
+    </div>
+    <div class="benchmark-note">※ 本ツールで匿名分析された同業界データの集計値です（個社特定不可）</div>
+  `;
+}
+
 function renderGauge(shareNum, currentLevel, nextLevel, shareGap, data) {
   const gaugeFill = document.getElementById("gaugeFill");
   const gaugeInfo = document.getElementById("gaugeInfo");
-  const gaugeBar = document.querySelector(".gauge-bar");
+  const gaugeBar = document.querySelector("#shareGaugeCard .gauge-bar");
   if (!gaugeFill || !gaugeInfo || !gaugeBar) return;
 
   gaugeFill.style.width = `${Math.min(shareNum, 100)}%`;
@@ -576,6 +852,8 @@ function bindTabs() {
 function bindResultActions() {
   const copyBtn = document.getElementById("copyBtn");
   const resetBtn = document.getElementById("resetBtn");
+  const printBtn = document.getElementById("printBtn");
+  const shareBtn = document.getElementById("shareBtn");
 
   copyBtn?.addEventListener("click", async () => {
     const persona = document.getElementById("personaResult")?.innerText || "";
@@ -599,12 +877,66 @@ ${strategy}
     }
   });
 
+  // B-5: 印刷 / PDF保存
+  printBtn?.addEventListener("click", () => {
+    window.print();
+  });
+
+  // B-6: 共有リンク発行
+  shareBtn?.addEventListener("click", async () => {
+    const id = window.__lastResultId;
+    if (!id) {
+      alert("共有リンクを発行できる結果がありません。再分析してください。");
+      return;
+    }
+    const shareUrl = `${location.origin}${location.pathname}?result=${encodeURIComponent(id)}`;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      const original = shareBtn.innerHTML;
+      shareBtn.innerHTML = "✅ リンクをコピー";
+      setTimeout(() => { shareBtn.innerHTML = original; }, 2000);
+    } catch {
+      prompt("以下のリンクをコピーしてください", shareUrl);
+    }
+  });
+
   resetBtn?.addEventListener("click", () => {
     document.getElementById("analysisForm")?.reset();
     hideResult();
     hideError();
+    hideLiveGauge();
+    document.getElementById("sharePreview").innerHTML = "";
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
+}
+
+// B-6: 共有URLからの結果復元
+async function restoreSharedResult() {
+  const params = new URLSearchParams(location.search);
+  const id = params.get("result");
+  if (!id) return;
+
+  try {
+    showLoading(true);
+    const res = await fetch(`${WORKER_URL}/api/result/${encodeURIComponent(id)}`);
+    const rawText = await res.text();
+    let data = {};
+    try {
+      data = rawText ? JSON.parse(rawText) : {};
+    } catch (e) {
+      data = {};
+    }
+    showLoading(false);
+
+    if (res.ok && data.success) {
+      renderResult(data);
+    } else {
+      showError("共有された分析結果が見つかりませんでした（有効期限切れの可能性があります）。");
+    }
+  } catch (err) {
+    showLoading(false);
+    showError("共有結果の読み込みに失敗しました。");
+  }
 }
 
 function showLoading(show) {
