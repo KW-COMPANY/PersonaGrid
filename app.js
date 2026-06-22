@@ -11,7 +11,6 @@ const SHARE_LEVELS = [
 ];
 
 // 業界別 標準市場規模（億円）。フロント側プレビュー用の簡易テーブル。
-// Worker側にも同等の正式テーブルを保持しており、最終算出はWorker側が正となる。
 const INDUSTRY_MARKET_SIZE = {
   "saas": 1.4,
   "人材": 9.0,
@@ -32,7 +31,7 @@ const INDUSTRY_MARKET_SIZE = {
   "コンサル": 7.0,
 };
 
-// 業界別市場規模（億円）を取得。万円換算用に「億円」で返す。
+// 業界別市場規模（億円）を取得。
 function lookupMarketSize(industry = "") {
   const key = String(industry).toLowerCase().replace(/\s+/g, "");
   for (const name in INDUSTRY_MARKET_SIZE) {
@@ -52,7 +51,7 @@ function calcShareFromSales(annualSalesManyen, marketSizeManyen) {
   return Math.min(share, 100);
 }
 
-// クライアント側の事前チェック（厳格すぎる検出を緩和）
+// クライアント側の事前チェック
 const SENSITIVE_PATTERNS = [
   /株式会社/g,
   /有限会社/g,
@@ -170,7 +169,6 @@ function getNextLevel(percent) {
   return null;
 }
 
-// 万円 → 読みやすい円表記
 function formatManyen(manyen) {
   const v = parseFloat(manyen);
   if (isNaN(v)) return "—";
@@ -444,7 +442,6 @@ function renderResult(data) {
   const personaResult = document.getElementById("personaResult");
   const strategyResult = document.getElementById("strategyResult");
 
-  // シェアはWorker側で年商から算出された値を最優先
   const currentShare = parseFloat(
     data.meta?.currentShare ||
     data.currentShare ||
