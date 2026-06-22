@@ -1,3 +1,4 @@
+<!-- Output: html -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -85,7 +86,7 @@
         </div>
         <div class="safe-ai-item">
           <div class="safe-ai-label">MULTI-STEP</div>
-          <div class="safe-ai-value">7段パイプライン</div>
+          <div class="safe-ai-value">9段パイプライン</div>
         </div>
         <div class="safe-ai-item">
           <div class="safe-ai-label">KNOWLEDGE</div>
@@ -131,6 +132,17 @@
         </div>
       </div>
 
+      <!-- B-2: リアルタイムプレビューゲージ -->
+      <div class="live-gauge-card" id="liveGaugeCard" style="display:none;">
+        <div class="live-gauge-label">入力中プレビュー：推定市場ポジション</div>
+        <div class="gauge-bar-wrap">
+          <div class="gauge-bar">
+            <div class="gauge-fill" id="liveGaugeFill"></div>
+          </div>
+        </div>
+        <div class="live-gauge-info" id="liveGaugeInfo"></div>
+      </div>
+
       <form class="analysis-form" id="analysisForm">
 
         <!-- ============================================
@@ -157,8 +169,29 @@
                 class="form-input form-input--required"
                 placeholder="例：SaaS / 人材 / 製造"
                 maxlength="100"
+                list="industryList"
                 required
               />
+              <!-- B-4: 業界サジェスト -->
+              <datalist id="industryList">
+                <option value="SaaS"></option>
+                <option value="人材"></option>
+                <option value="製造"></option>
+                <option value="製造DX"></option>
+                <option value="EC"></option>
+                <option value="小売"></option>
+                <option value="飲食"></option>
+                <option value="不動産"></option>
+                <option value="建設"></option>
+                <option value="医療"></option>
+                <option value="介護"></option>
+                <option value="物流"></option>
+                <option value="広告"></option>
+                <option value="金融"></option>
+                <option value="教育"></option>
+                <option value="IT"></option>
+                <option value="コンサル"></option>
+              </datalist>
               <div class="form-hint">業界カテゴリを匿名で入力してください</div>
             </div>
 
@@ -180,6 +213,16 @@
                 <span class="unit-label">万円</span>
               </div>
               <div class="form-hint">年商を「万円」単位で入力してください（例：5億円→50000）</div>
+
+              <!-- B-1: 年商クイック入力プリセット -->
+              <div class="sales-presets" id="salesPresets">
+                <button type="button" class="sales-preset-btn" data-sales="10000">1億円</button>
+                <button type="button" class="sales-preset-btn" data-sales="50000">5億円</button>
+                <button type="button" class="sales-preset-btn" data-sales="100000">10億円</button>
+                <button type="button" class="sales-preset-btn" data-sales="500000">50億円</button>
+                <button type="button" class="sales-preset-btn" data-sales="1000000">100億円</button>
+              </div>
+
               <div id="sharePreview" class="share-preview"></div>
             </div>
 
@@ -230,6 +273,26 @@
                 <span class="unit-label">億円</span>
               </div>
               <div class="form-hint">未入力の場合、業界別の標準市場規模を自動参照します</div>
+            </div>
+
+            <div class="form-group is-optional">
+              <label class="form-label" for="growthRate">
+                想定年成長率（任意・3年予測用）
+                <span class="badge-optional">任意</span>
+              </label>
+              <div class="input-with-unit">
+                <input
+                  type="number"
+                  id="growthRate"
+                  class="form-input"
+                  placeholder="例：20"
+                  min="0"
+                  max="500"
+                  step="1"
+                />
+                <span class="unit-label">%</span>
+              </div>
+              <div class="form-hint">年商の想定成長率（未入力時は15%で試算）</div>
             </div>
 
             <div class="form-group is-optional form-group--wide">
@@ -292,7 +355,7 @@
         <div class="form-actions">
           <button type="submit" class="btn-analyze" id="analyzeBtn">
             <span class="btn-text">AIエージェント分析開始</span>
-            <span class="btn-badge">7段パイプライン</span>
+            <span class="btn-badge">9段パイプライン</span>
           </button>
         </div>
 
@@ -307,11 +370,13 @@
         <div class="loading-steps">
           <div class="loading-step">① 入力サニタイズ・タスク分解</div>
           <div class="loading-step">② 業界別市場規模参照・年商シェア換算</div>
-          <div class="loading-step">③ 外部ナレッジ検索（Wikipedia連携）</div>
-          <div class="loading-step">④ 内部ナレッジ参照（KV + 内蔵KB）</div>
-          <div class="loading-step">⑤ AI市場分類（多段処理）</div>
-          <div class="loading-step">⑥ ペルソナ生成 → 要約 → 戦略 → セグメント（多段AI）</div>
-          <div class="loading-step">⑦ 匿名ナレッジ蓄積（KV保存）</div>
+          <div class="loading-step">③ 目標年商逆算・業界順位推定</div>
+          <div class="loading-step">④ 外部ナレッジ検索（Wikipedia連携）</div>
+          <div class="loading-step">⑤ 内部ナレッジ参照・匿名ベンチマーク集計（KV）</div>
+          <div class="loading-step">⑥ AI市場分類（多段処理）</div>
+          <div class="loading-step">⑦ ペルソナ生成 → 要約 → 戦略 → セグメント（多段AI）</div>
+          <div class="loading-step">⑧ 3年シミュレーション・アクション抽出</div>
+          <div class="loading-step">⑨ 匿名ナレッジ蓄積（KV保存）</div>
         </div>
       </div>
     </section>
@@ -325,6 +390,12 @@
 
       <div class="result-meta" id="resultMeta"></div>
 
+      <!-- B-3: サマリーヒーロー -->
+      <div class="summary-hero" id="summaryHero"></div>
+
+      <!-- A-3: やるべきことTOP3 -->
+      <div class="action-top3" id="actionTop3"></div>
+
       <div class="share-gauge-card" id="shareGaugeCard">
         <div class="gauge-label-top">現在の市場ポジション</div>
         <div class="gauge-bar-wrap">
@@ -334,6 +405,15 @@
         </div>
         <div class="gauge-info" id="gaugeInfo"></div>
       </div>
+
+      <!-- A-1 / A-2: 目標年商逆算・業界内順位 -->
+      <div class="insight-row" id="insightRow"></div>
+
+      <!-- A-5: 3年シミュレーション -->
+      <div class="simulation-card" id="simulationCard" style="display:none;"></div>
+
+      <!-- A-4: 匿名ベンチマーク -->
+      <div class="benchmark-card" id="benchmarkCard" style="display:none;"></div>
 
       <div class="classification-row" id="classificationRow"></div>
 
@@ -352,6 +432,8 @@
 
       <div class="result-actions">
         <button class="btn-secondary" id="copyBtn">結果コピー</button>
+        <button class="btn-secondary" id="shareBtn">共有リンク発行</button>
+        <button class="btn-secondary" id="printBtn">印刷 / PDF保存</button>
         <button class="btn-secondary" id="resetBtn">新しい分析</button>
       </div>
 
@@ -367,7 +449,7 @@
     </div>
     <div class="footer-tech">
       <span>External: Wikipedia API</span>
-      <span>Multi-Step: 7 Stage Pipeline</span>
+      <span>Multi-Step: 9 Stage Pipeline</span>
       <span>Knowledge: KV + Market KB</span>
       <span>Domain: Sales Strategy</span>
     </div>
