@@ -1,4 +1,3 @@
-/* File: style.css */
 :root {
   --bg-base: #070c17;
   --bg-surface: #0d1526;
@@ -1401,10 +1400,6 @@ input[type="number"] { -moz-appearance: textfield; }
   .benchmark-key { color: #222 !important; }
 }
 
-/* ============================================
-   追加分：ヘルプツールチップ（?アイコン）
-   ※ index.html内の .help-tip 要素に対応
-============================================ */
 .help-tip {
   position: relative;
   display: inline-flex;
@@ -1477,10 +1472,6 @@ input[type="number"] { -moz-appearance: textfield; }
   }
 }
 
-/* ============================================
-   追加分：エラーバナー内「再試行」ボタン
-   ※ app.js内の showError() が生成する .btn-retry に対応
-============================================ */
 .btn-retry {
   display: inline-flex;
   align-items: center;
