@@ -1,3 +1,4 @@
+// File: app.js
 const WORKER_URL = "https://personagrid.gmo-k-watanabe.workers.dev";
 
 const SHARE_LEVELS = [
@@ -890,10 +891,10 @@ ${strategy}
     try {
       await navigator.clipboard.writeText(shareUrl);
       const original = shareBtn.innerHTML;
-      shareBtn.innerHTML = "✅ リンクをコピー";
-      setTimeout(() => { shareBtn.innerHTML = original; }, 2000);
+      shareBtn.innerHTML = "✅ リンクをコピー（30日間有効）";
+      setTimeout(() => { shareBtn.innerHTML = original; }, 2500);
     } catch {
-      prompt("以下のリンクをコピーしてください", shareUrl);
+      prompt("以下のリンクをコピーしてください（30日間有効です）", shareUrl);
     }
   });
 
@@ -955,9 +956,20 @@ function showError(html) {
   const banner = document.getElementById("errorBanner");
   if (!banner) return;
 
-  banner.innerHTML = `⚠️ ${html}`;
+  banner.innerHTML = `
+    ⚠️ ${html}
+    <div style="margin-top:6px;">
+      <button type="button" class="btn-retry" id="errorRetryBtn">🔄 再試行する</button>
+    </div>
+  `;
   banner.style.display = "block";
   banner.scrollIntoView({ behavior: "smooth", block: "center" });
+
+  const retryBtn = document.getElementById("errorRetryBtn");
+  retryBtn?.addEventListener("click", () => {
+    hideError();
+    document.getElementById("analyzeBtn")?.click();
+  });
 }
 
 function hideError() {
