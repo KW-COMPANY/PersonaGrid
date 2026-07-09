@@ -1,3 +1,5 @@
+<!-- Output: html -->
+<!-- File: index.html -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -50,7 +52,7 @@
 
       <nav class="header-nav">
         <span class="nav-badge">AI Agent</span>
-        <span class="nav-badge powered">Gemini + Anonymous Safe Mode</span>
+        <span class="nav-badge powered">Gemini 2.5 + Anonymous Safe Mode</span>
       </nav>
 
     </div>
@@ -81,7 +83,7 @@
       <div class="safe-ai-grid">
         <div class="safe-ai-item">
           <div class="safe-ai-label">EXTERNAL API</div>
-          <div class="safe-ai-value">Wikipedia + Gemini 連携</div>
+          <div class="safe-ai-value">Wikipedia + Gemini 2.5 連携</div>
         </div>
         <div class="safe-ai-item">
           <div class="safe-ai-label">MULTI-STEP</div>
@@ -161,6 +163,7 @@
               <label class="form-label" for="industry">
                 業界・業種
                 <span class="badge-required">必須</span>
+                <span class="help-tip" data-tip="SaaS・製造・小売など、業界カテゴリを一般名詞で入力してください。実在の企業名は入力できません。" tabindex="0">?</span>
               </label>
               <input
                 type="text"
@@ -198,6 +201,7 @@
               <label class="form-label" for="annualSales">
                 年商（売上高）
                 <span class="badge-required">必須</span>
+                <span class="help-tip" data-tip="貴社（匿名で）の年間売上高を万円単位で入力してください。5億円なら「50000」と入力します。" tabindex="0">?</span>
               </label>
               <div class="input-with-unit">
                 <input
@@ -245,6 +249,7 @@
               <label class="form-label" for="analysisCategory">
                 分析対象カテゴリ
                 <span class="badge-optional">任意</span>
+                <span class="help-tip" data-tip="サービスをより具体的なカテゴリで表現します。例：BtoB SaaS、製造DX、EC支援 など。" tabindex="0">?</span>
               </label>
               <input
                 type="text"
@@ -259,6 +264,7 @@
               <label class="form-label" for="marketSize">
                 市場規模（任意・上書き用）
                 <span class="badge-optional">任意</span>
+                <span class="help-tip" data-tip="正確な市場規模データをお持ちの場合のみ入力してください。未入力の場合は業界別の標準値を自動で参照します。" tabindex="0">?</span>
               </label>
               <div class="input-with-unit">
                 <input
@@ -278,6 +284,7 @@
               <label class="form-label" for="growthRate">
                 想定年成長率（任意・3年予測用）
                 <span class="badge-optional">任意</span>
+                <span class="help-tip" data-tip="今後の年間成長率の見込みです。未入力の場合は標準値15%で試算されます。" tabindex="0">?</span>
               </label>
               <div class="input-with-unit">
                 <input
@@ -298,6 +305,7 @@
               <label class="form-label" for="productService">
                 商品・サービス概要
                 <span class="badge-optional">任意</span>
+                <span class="help-tip" data-tip="どのような特徴・機能を持つ商品/サービスかを匿名ベースで簡潔に記載してください。" tabindex="0">?</span>
               </label>
               <textarea
                 id="productService"
@@ -311,6 +319,7 @@
               <label class="form-label" for="competitors">
                 競合タイプ・競争環境
                 <span class="badge-optional">任意</span>
+                <span class="help-tip" data-tip="競合の実名は避け、「外資系SaaS」「低価格帯サービス」のようにタイプで記載してください。" tabindex="0">?</span>
               </label>
               <textarea
                 id="competitors"
@@ -324,6 +333,7 @@
               <label class="form-label" for="targetSegment">
                 現在のターゲット層
                 <span class="badge-optional">任意</span>
+                <span class="help-tip" data-tip="現在アプローチしている企業規模や層を記載してください。" tabindex="0">?</span>
               </label>
               <input
                 type="text"
@@ -338,6 +348,7 @@
               <label class="form-label" for="salesGoal">
                 営業目標・課題
                 <span class="badge-optional">任意</span>
+                <span class="help-tip" data-tip="達成したい目標や現状の課題を記載すると、より実践的な戦略が提案されます。" tabindex="0">?</span>
               </label>
               <input
                 type="text"
@@ -356,6 +367,9 @@
             <span class="btn-text">AIエージェント分析開始</span>
             <span class="btn-badge">9段パイプライン</span>
           </button>
+          <p class="form-note">
+            ⏱ 平均15〜20秒で分析が完了します。結果は匿名IDに紐づけて最大30日間保存され、「共有リンク発行」からいつでも見返せます。
+          </p>
         </div>
 
       </form>
