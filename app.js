@@ -571,8 +571,18 @@ function renderResult(data) {
 
 // [Closed Loop] フィードバックUI描画
 function renderFeedback(data) {
-  const box = document.getElementById("feedbackCard");
-  if (!box) return;
+  let box = document.getElementById("feedbackCard");
+
+  // index.html を変更しないため、コンテナが無ければ動的生成する
+  if (!box) {
+    const actions = document.querySelector("#resultSection .result-actions");
+    if (!actions) return;
+    box = document.createElement("div");
+    box.id = "feedbackCard";
+    box.className = "feedback-card";
+    box.style.display = "none";
+    actions.insertAdjacentElement("beforebegin", box);
+  }
 
   const resultId = data.meta?.resultId || "";
   const existing = data.meta?.feedback;
@@ -584,7 +594,6 @@ function renderFeedback(data) {
 
   box.style.display = "block";
 
-  // すでに評価済みの共有結果の場合は結果を表示するだけ
   if (existing && existing.rating) {
     const label = existing.rating === "up" ? "👍 役立った" : "👎 いまいち";
     box.innerHTML = `
