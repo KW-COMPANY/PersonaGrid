@@ -1,4 +1,3 @@
-// File: app.js
 const WORKER_URL = "https://personagrid.gmo-k-watanabe.workers.dev";
 
 const SHARE_LEVELS = [
@@ -505,7 +504,7 @@ function renderResult(data) {
     `
     : "";
 
-  // [Closed Loop] 学習状況の可視化（何件の高評価から学習したか）
+  // 学習状況の可視化（何件の高評価から学習したか）
   const cl = data.meta?.closedLoop;
   const closedLoopHTML = cl
     ? `
@@ -559,7 +558,7 @@ function renderResult(data) {
   // 共有用に結果IDを保持
   window.__lastResultId = data.meta?.resultId || "";
 
-  // [Closed Loop] フィードバックUIを描画（Evaluateの入口）
+  // フィードバックUIを描画（Evaluateの入口）
   renderFeedback(data);
 
   showResult();
@@ -569,7 +568,7 @@ function renderResult(data) {
   }, 100);
 }
 
-// [Closed Loop] フィードバックUI描画
+// フィードバックUI描画
 function renderFeedback(data) {
   let box = document.getElementById("feedbackCard");
 
