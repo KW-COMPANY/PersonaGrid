@@ -1,3 +1,4 @@
+// File: app.js
 const WORKER_URL = "https://personagrid.gmo-k-watanabe.workers.dev";
 
 const SHARE_LEVELS = [
@@ -504,6 +505,21 @@ function renderResult(data) {
     `
     : "";
 
+  // [Closed Loop] 学習状況の可視化（何件の高評価から学習したか）
+  const cl = data.meta?.closedLoop;
+  const closedLoopHTML = cl
+    ? `
+      <h2>Closed Loop 学習状況</h2>
+      <blockquote>
+        この分析は同業界の蓄積データ <strong>${escapeHtml(String(cl.totalCasesInIndustry))}件</strong> を参照し、
+        うち高評価 <strong>${escapeHtml(String(cl.learnedFromUpvoted))}件</strong> のパターンを優先学習しました。${
+          cl.appliedLearningHint ? "<br>過去の低評価フィードバックを踏まえた改善も反映しています。" : ""
+        }<br>
+        <span style="font-size:0.78rem;color:#7a8ca8;">※ 結果へのフィードバックを送るほど、次回以降の精度が向上します。</span>
+      </blockquote>
+    `
+    : "";
+
   const personaHTML = `
     <h2>シェア分類</h2>
     <p>${data.meta?.currentLevel?.name || currentLevel.name}</p>
@@ -517,6 +533,7 @@ function renderResult(data) {
     <div>${markdownToHTML(data.segment || "")}</div>
 
     ${externalPreview}
+    ${closedLoopHTML}
     ${pipelineHTML}
   `;
 
@@ -542,11 +559,124 @@ function renderResult(data) {
   // 共有用に結果IDを保持
   window.__lastResultId = data.meta?.resultId || "";
 
+  // [Closed Loop] フィードバックUIを描画（Evaluateの入口）
+  renderFeedback(data);
+
   showResult();
 
   setTimeout(() => {
     document.getElementById("resultSection")?.scrollIntoView({ behavior: "smooth" });
   }, 100);
+}
+
+// [Closed Loop] フィードバックUI描画
+function renderFeedback(data) {
+  const box = document.getElementById("feedbackCard");
+  if (!box) return;
+
+  const resultId = data.meta?.resultId || "";
+  const existing = data.meta?.feedback;
+
+  if (!resultId) {
+    box.style.display = "none";
+    return;
+  }
+
+  box.style.display = "block";
+
+  // すでに評価済みの共有結果の場合は結果を表示するだけ
+  if (existing && existing.rating) {
+    const label = existing.rating === "up" ? "👍 役立った" : "👎 いまいち";
+    box.innerHTML = `
+      <div class="feedback-title">この分析へのフィードバック</div>
+      <div class="feedback-done">✅ 評価済み：${escapeHtml(label)}${
+        existing.comment ? `（${escapeHtml(existing.comment)}）` : ""
+      }</div>
+    `;
+    return;
+  }
+
+  box.innerHTML = `
+    <div class="feedback-title">📝 この分析は役に立ちましたか？</div>
+    <div class="feedback-sub">評価いただくと、同業界の次回分析の精度が継続的に向上します（Closed Loop）。</div>
+    <div class="feedback-btns">
+      <button type="button" class="feedback-btn" id="fbUp" data-rating="up">👍 役立った</button>
+      <button type="button" class="feedback-btn" id="fbDown" data-rating="down">👎 いまいち</button>
+    </div>
+    <textarea
+      id="feedbackComment"
+      class="feedback-comment"
+      placeholder="改善点・良かった点があれば匿名で記入（任意・企業名やURLは入力不可）"
+      maxlength="500"
+    ></textarea>
+    <div class="feedback-status" id="feedbackStatus"></div>
+  `;
+
+  const upBtn = document.getElementById("fbUp");
+  const downBtn = document.getElementById("fbDown");
+  let selectedRating = null;
+
+  const selectRating = (rating) => {
+    selectedRating = rating;
+    upBtn.classList.toggle("active", rating === "up");
+    downBtn.classList.toggle("active", rating === "down");
+    submitFeedback(resultId, selectedRating);
+  };
+
+  upBtn?.addEventListener("click", () => selectRating("up"));
+  downBtn?.addEventListener("click", () => selectRating("down"));
+}
+
+// [Closed Loop] フィードバック送信
+async function submitFeedback(resultId, rating) {
+  const status = document.getElementById("feedbackStatus");
+  const comment = document.getElementById("feedbackComment")?.value?.trim() || "";
+
+  if (comment && containsSensitiveInfo(comment)) {
+    if (status) {
+      status.style.color = "#ff8f8f";
+      status.textContent = "⚠️ コメントに企業名・個人情報・URL等は入力できません。";
+    }
+    return;
+  }
+
+  if (status) {
+    status.style.color = "#7a8ca8";
+    status.textContent = "送信中…";
+  }
+
+  try {
+    const res = await fetch(`${WORKER_URL}/api/feedback`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ resultId, rating, comment }),
+    });
+
+    const rawText = await res.text();
+    let data = {};
+    try {
+      data = rawText ? JSON.parse(rawText) : {};
+    } catch (e) {
+      data = {};
+    }
+
+    if (res.ok && data.success) {
+      if (status) {
+        status.style.color = "#22c55e";
+        status.textContent = "✅ フィードバックを反映しました。次回以降の分析精度に活用されます。";
+      }
+    } else {
+      if (status) {
+        status.style.color = "#ff8f8f";
+        status.textContent = `⚠️ ${data.error || "送信に失敗しました。"}`;
+      }
+    }
+  } catch (err) {
+    if (status) {
+      status.style.color = "#ff8f8f";
+      status.textContent = "⚠️ 送信に失敗しました。時間をおいて再試行してください。";
+    }
+  }
 }
 
 // B-3: サマリーヒーロー描画
